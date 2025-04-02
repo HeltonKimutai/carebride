@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+   <link rel="stylesheet" href="style.css"style>
+   
+</head>
+<body>
+    <div class="hero-wrap"style="background-image: url('images/bg_1.jpg');">
+        <div class="overlay"></div>
+    <div class="container">
+        <form class="signup-form" id="signupForm">
+            <div class="form-header">
+                <img src="images/CareBridge logo.png" alt="Logo" class="logo">
+                <h1>Create Your Account</h1>
+                <p>Please fill out the form below to get started</p>
+            </div> 
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" name="firstName" id="firstName" placeholder="Enter your first name" required>
+                    <span class="error-message" id="firstNameError">This field is required</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" name="lastName" id="lastName" placeholder="Enter your last name" required>
+                    <span class="error-message" id="lastNameError">This field is required</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" name="phone" id="phone" placeholder="Enter your phone number" required>
+                <span class="error-message" id="phoneError">Please enter a valid phone number</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" name="email" id="email" placeholder="Enter your email address" required>
+                <span class="error-message" id="emailError">Please enter a valid email address</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-toggle">
+                    <input type="password" name="password" id="password" placeholder="Create a password" required>
+                    <i id="togglePassword">👁️</i>
+                </div>
+                <div class="progress-container" id="passwordStrengthProgress">
+                    <div class="progress-bar" id="passwordStrengthBar"></div>
+                </div>
+                <span class="password-strength" id="passwordStrengthText"></span>
+                <span class="error-message" id="passwordError">Password must be at least 8 characters long</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <div class="password-toggle">
+                    <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm your password" required>
+                    <i id="toggleConfirmPassword">👁️</i>
+                </div>
+                <span class="error-message" id="confirmPasswordError">Passwords do not match</span>
+            </div>
+            
+            <button type="submit" class="signup-button">Create Account</button>
+            
+            <div class="success-message" id="successMessage">Account created successfully! Please check your email for verification.</div>
+            
+            <p class="login-link">Already have an account? <a href="login .html">Log in</a></p>
+        </form>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const signupForm = document.getElementById('signupForm');
+    const firstName = document.getElementById('firstName');
+    const lastName = document.getElementById('lastName');
+    const phone = document.getElementById('phone');
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+    const successMessage = document.getElementById('successMessage');
+    const passwordStrengthBar = document.getElementById('passwordStrengthBar');
+    const passwordStrengthText = document.getElementById('passwordStrengthText');
+    const passwordStrengthProgress = document.getElementById('passwordStrengthProgress');
+    
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        togglePasswordVisibility(password, this);
+    });
+
+    document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+        togglePasswordVisibility(confirmPassword, this);
+    });
+
+    function togglePasswordVisibility(inputField, icon) {
+        if (inputField.type === 'password') {
+            inputField.type = 'text';
+            icon.textContent = '👁️';
+        } else {
+            inputField.type = 'password';
+            icon.textContent = '🔒';
+        }
+    }
+
+    // Password strength meter
+    password.addEventListener('input', function() {
+        const value = password.value;
+        let strength = 0;
+
+        passwordStrengthProgress.style.display = 'block';
+        passwordStrengthText.style.display = 'block';
+
+        if (value.length >= 8) strength += 25;
+        if (value.match(/[a-z]+/)) strength += 25;
+        if (value.match(/[A-Z]+/)) strength += 25;
+        if (value.match(/[0-9]+/) || value.match(/[^a-zA-Z0-9]+/)) strength += 25;
+
+        passwordStrengthBar.style.width = strength + '%';
+
+        if (strength < 50) {
+            passwordStrengthBar.style.backgroundColor = 'var(--error-color)';
+            passwordStrengthText.textContent = 'Weak password';
+            passwordStrengthText.style.color = 'var(--error-color)';
+        } else if (strength < 75) {
+            passwordStrengthBar.style.backgroundColor = '#ffb703';
+            passwordStrengthText.textContent = 'Medium strength password';
+            passwordStrengthText.style.color = '#ffb703';
+        } else {
+            passwordStrengthBar.style.backgroundColor = 'var(--success-color)';
+            passwordStrengthText.textContent = 'Strong password';
+            passwordStrengthText.style.color = 'var(--success-color)';
+        }
+    });
+
+    // Form validation
+    function validateEmail(email) {
+        const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    function validatePhone(phoneNumber) {
+        const re = /^[0-9]{10,15}$/; // Allows 10-15 digit numbers
+        return re.test(String(phoneNumber));
+    }
+
+    function showError(input, message) {
+        const formGroup = input.parentElement;
+        formGroup.classList.add('has-error');
+        const errorElement = formGroup.querySelector('.error-message');
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        input.classList.add('error');
+    }
+
+    function clearError(input) {
+        const formGroup = input.parentElement;
+        formGroup.classList.remove('has-error');
+        const errorElement = formGroup.querySelector('.error-message');
+        if (errorElement) {
+            errorElement.style.display = 'none';
+        }
+        input.classList.remove('error');
+    }
+
+    signupForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        let isValid = true;
+
+        // Clear previous errors
+        document.querySelectorAll('.form-group').forEach(group => {
+            group.classList.remove('has-error');
+        });
+
+        document.querySelectorAll('.error-message').forEach(error => {
+            error.style.display = 'none';
+        });
+
+        // Validate first name
+        if (firstName.value.trim() === '') {
+            showError(firstName, 'First name is required');
+            isValid = false;
+        } else {
+            clearError(firstName);
+        }
+
+        // Validate last name
+        if (lastName.value.trim() === '') {
+            showError(lastName, 'Last name is required');
+            isValid = false;
+        } else {
+            clearError(lastName);
+        }
+
+        // Validate phone number
+        if (!validatePhone(phone.value)) {
+            showError(phone, 'Enter a valid phone number (10-15 digits)');
+            isValid = false;
+        } else {
+            clearError(phone);
+        }
+
+        // Validate email
+        if (!validateEmail(email.value)) {
+            showError(email, 'Enter a valid email address');
+            isValid = false;
+        } else {
+            clearError(email);
+        }
+
+        // Validate password
+        if (password.value.length < 8) {
+            showError(password, 'Password must be at least 8 characters long');
+            isValid = false;
+        } else {
+            clearError(password);
+        }
+
+        // Validate confirm password
+        if (password.value !== confirmPassword.value) {
+            showError(confirmPassword, 'Passwords do not match');
+            isValid = false;
+        } else {
+            clearError(confirmPassword);
+        }
+
+        if (isValid) {
+            const user = {
+                firstName: firstName.value,
+                lastName: lastName.value,
+                phone: phone.value,
+                email: email.value,
+                password: password.value
+            };
+
+            successMessage.classList.add('show');
+
+            // Reset form after 3 seconds
+            setTimeout(() => {
+                signupForm.reset();
+                successMessage.classList.remove('show');
+                passwordStrengthProgress.style.display = 'none';
+                passwordStrengthText.style.display = 'none';
+            }, 3000);
+
+            console.log('Form submitted:', user);
+        }
+    });
+});
+
+</script>
